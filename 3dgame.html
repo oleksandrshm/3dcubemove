@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Scene with Keyboard Controls</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Створення сцени
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdddddd);
+
+        // Створення камери
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // Створення рендерера
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Додавання куба
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        // Додавання освітлення
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1).normalize();
+        scene.add(light);
+
+        // Обробка натискань клавіш
+        const keyState = {};
+        window.addEventListener('keydown', (event) => {
+            keyState[event.code] = true;
+        });
+        window.addEventListener('keyup', (event) => {
+            keyState[event.code] = false;
+        });
+
+        function handleKeyControls() {
+            const moveDistance = 0.1;
+            if (keyState['ArrowUp']) {
+                cube.position.z -= moveDistance;
+            }
+            if (keyState['ArrowDown']) {
+                cube.position.z += moveDistance;
+            }
+            if (keyState['ArrowLeft']) {
+                cube.position.x -= moveDistance;
+            }
+            if (keyState['ArrowRight']) {
+                cube.position.x += moveDistance;
+            }
+        }
+
+        // Анімація сцени
+        function animate() {
+            requestAnimationFrame(animate);
+
+            handleKeyControls(); // Виклик функції обробки клавіш
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Додавання обробника зміни розмірів вікна
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
